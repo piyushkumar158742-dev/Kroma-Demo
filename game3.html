@@ -79,10 +79,12 @@
     opacity: 0;
     transform: translateY(6px);
     transition: opacity .35s ease, transform .35s ease;
+    text-align: center;
   }
   .timer-result.visible { opacity: 1; transform: translateY(0); }
   .timer-result.fail { color: #ff5470; }
   .timer-result.miss { color: #2dd4ff; }
+  .timer-result.perfect { color: #7dffb2; font-weight: 700; }
 
   /* Redesigned Official X Button */
   .share-btn {
@@ -92,7 +94,7 @@
     text-transform: uppercase;
     font-size: 0.8rem;
     padding: 12px 28px;
-    border-radius: 9999px; /* Pill shape */
+    border-radius: 9999px;
     margin-top: 10px;
     border: 1px solid #333;
     background: #000000;
@@ -212,7 +214,7 @@
     btn.textContent = 'Stop';
     btn.classList.add('stop');
     panel.classList.add('running');
-    result.classList.remove('visible', 'fail', 'miss');
+    result.classList.remove('visible', 'fail', 'miss', 'perfect');
     result.textContent = '';
     shareBtn.classList.remove('visible');
     rafId = requestAnimationFrame(tick);
@@ -239,16 +241,17 @@
     }
 
     var diffMs = Math.round((elapsedRaw - TARGET) * 1000);
-
-    // Kept your impossible-to-win mechanic intact!
-    if(diffMs === 0){
-      var nudge = 1 + Math.floor(Math.random() * 4);
-      diffMs = Math.random() < 0.5 ? -nudge : nudge;
-      elapsedRaw = TARGET + diffMs / 1000;
-    }
-
     var clamped = Math.min(Math.max(elapsedRaw, 0), TIMEOUT);
     display.textContent = clamped.toFixed(3);
+
+    if (diffMs === 0) {
+      display.textContent = TARGET.toFixed(3);
+      result.textContent = "PERFECT — Exactly 5.000";
+      result.classList.add('visible', 'perfect');
+      shareText = "I stopped the timer at exactly 5.000 seconds. PERFECT. You should also try " + pageUrl;
+      shareBtn.classList.add('visible');
+      return;
+    }
 
     var diffSeconds = (Math.abs(diffMs) / 1000).toFixed(3);
 
