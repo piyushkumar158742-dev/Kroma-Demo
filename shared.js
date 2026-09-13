@@ -193,7 +193,11 @@
 
   /* ============ Game ecosystem registry ============ */
   var FALLBACK_GAMES = [
-    { id:"cosmic-calendar", name:"Cosmic Calendar", url:"index.html" }
+    { id:"cosmic-calendar", name:"Cosmic Calendar", url:"index.html" },
+    { id:"block-market", name:"Block Market", url:"game2.html" },
+    { id:"stop-at-5000", name:"Stop at 5.000", url:"game3.html" },
+    { id:"a-is-z-typer", name:"A is Z Typer", url:"game4.html" },
+    { id:"dvd-game", name:"DVD Game", url:"game5.html" }
   ];
   var GAMES = FALLBACK_GAMES.slice();
   var currentGameIndex = parseInt(document.body.getAttribute('data-game-index'), 10) || 0;
@@ -220,6 +224,22 @@
       GAMES = FALLBACK_GAMES.slice();
       return GAMES;
     });
+
+  /* ============ Random game entry ============ */
+  /* GitHub Pages uses index.html as the site's entry file. On the site root,
+     choose a live game before the player starts. Direct links to index.html
+     still open Cosmic Calendar normally. */
+  var isSiteRoot = window.location.pathname.endsWith('/') && !window.location.search;
+  if(isSiteRoot){
+    gamesReady.then(function(){
+      var liveGames = GAMES.filter(function(game){ return game.status !== 'hidden'; });
+      if(!liveGames.length) liveGames = GAMES.slice();
+      var selected = liveGames[Math.floor(Math.random() * liveGames.length)];
+      if(selected && selected.url && selected.url !== 'index.html'){
+        window.location.replace(selected.url);
+      }
+    });
+  }
 
   function loadGame(idx){
     gamesReady.then(function(){
