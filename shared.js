@@ -191,21 +191,43 @@
     });
   }
 
-  /* ============ Game ecosystem — 10 slots ============ */
-  var GAMES = [
-    { name:"Cosmic Calendar", url:"index.html" },
-    { name:"Game 2", url:"game2.html" },
-    { name:"Game 3", url:"game3.html" },
-    { name:"Game 4", url:"game4.html" },
-    { name:"Game 5", url:"game5.html" }
+  /* ============ Game ecosystem registry ============ */
+  var FALLBACK_GAMES = [
+    { id:"cosmic-calendar", name:"Cosmic Calendar", url:"index.html" }
   ];
+  var GAMES = FALLBACK_GAMES.slice();
   var currentGameIndex = parseInt(document.body.getAttribute('data-game-index'), 10) || 0;
 
+  function isValidGameRegistry(games){
+    return Array.isArray(games) && games.length > 0 && games.every(function(game){
+      return game && typeof game.name === 'string' && game.name.trim() &&
+             typeof game.url === 'string' && game.url.trim();
+    });
+  }
+
+  var gamesReady = fetch('games.json', {cache:'no-store'})
+    .then(function(response){
+      if(!response.ok) throw new Error('games.json returned HTTP ' + response.status);
+      return response.json();
+    })
+    .then(function(games){
+      if(!isValidGameRegistry(games)) throw new Error('Invalid games.json registry');
+      GAMES = games;
+      return GAMES;
+    })
+    .catch(function(error){
+      console.error('Kroma game registry failed to load:', error);
+      GAMES = FALLBACK_GAMES.slice();
+      return GAMES;
+    });
+
   function loadGame(idx){
-    idx = ((idx % GAMES.length) + GAMES.length) % GAMES.length;
-    if(idx === currentGameIndex) return;
-    if (window.innerWidth < 992) { sessionStorage.setItem('navExpanded', '1'); }
-    window.location.href = GAMES[idx].url;
+    gamesReady.then(function(){
+      idx = ((idx % GAMES.length) + GAMES.length) % GAMES.length;
+      if(idx === currentGameIndex) return;
+      if(window.innerWidth < 992) { sessionStorage.setItem('navExpanded', '1'); }
+      window.location.href = GAMES[idx].url;
+    });
   }
 
   function wireNavButton(id, handler){
@@ -215,22 +237,22 @@
   wireNavButton('first-game-btn', function(){ loadGame(0); });
   wireNavButton('back-game-btn', function(){ loadGame(currentGameIndex-1); });
   wireNavButton('random-game-btn', function(){
-    var idx;
-    do{ idx = Math.floor(Math.random()*GAMES.length); } while(idx===currentGameIndex && GAMES.length>1);
-    loadGame(idx);
+    gamesReady.then(function(){
+      var idx;
+      do{ idx = Math.floor(Math.random()*GAMES.length); } while(idx===currentGameIndex && GAMES.length>1);
+      loadGame(idx);
+    });
   });
   wireNavButton('next-game-btn', function(){ loadGame(currentGameIndex+1); });
-  wireNavButton('last-game-btn', function(){ loadGame(GAMES.length-1); });
-
+  wireNavButton('last-game-btn', function(){
+    gamesReady.then(function(){ loadGame(GAMES.length-1); });
+  });
 
   /* ============ Nav Bar Visibility & Expand Logic ============ */
   var navBar = document.querySelector('.game-nav');
   if (navBar) {
-    
-    // Desktop: Track mouse to show navbar when near the bottom edge
     document.addEventListener('mousemove', function(e) {
       if (window.innerWidth >= 992) {
-        // Show when mouse is anywhere in the bottom ~18% of the screen
         var revealZone = Math.max(140, window.innerHeight * 0.18);
         if (window.innerHeight - e.clientY < revealZone) {
           navBar.classList.add('desktop-visible');
@@ -240,21 +262,18 @@
       }
     });
 
-    // Mobile: Tap to expand card, 10-second timeout to collapse
     var collapseTimeout;
     
-    // Click on the card container to expand it
     navBar.addEventListener('click', function(e) {
       if (window.innerWidth < 992) {
         if (!navBar.classList.contains('mobile-expanded')) {
-          e.preventDefault(); // Prevents button presses when it's closed
+          e.preventDefault();
           navBar.classList.add('mobile-expanded');
           resetCollapseTimeout();
         }
       }
     });
 
-    // Click anywhere outside the expanded card on mobile to immediately collapse it
     document.addEventListener('click', function(e) {
       if (window.innerWidth < 992 && navBar.classList.contains('mobile-expanded')) {
          if (!navBar.contains(e.target)) {
@@ -263,7 +282,6 @@
       }
     });
 
-    // Reset the 10-second timeout if a button inside is clicked
     navBar.querySelectorAll('.game-nav-btn').forEach(function(btn) {
       btn.addEventListener('click', function(e) {
          if (window.innerWidth < 992) {
@@ -277,11 +295,9 @@
       clearTimeout(collapseTimeout);
       collapseTimeout = setTimeout(function() {
         navBar.classList.remove('mobile-expanded');
-      }, 10000); // Wait exactly 10 seconds before collapsing back to card
+      }, 10000);
     }
 
-    // Landed here from a nav-bar button tap — keep the card open (and the
-    // 10s timer running) instead of snapping back to closed on load
     if (window.innerWidth < 992 && sessionStorage.getItem('navExpanded') === '1') {
       sessionStorage.removeItem('navExpanded');
       navBar.classList.add('mobile-expanded');
