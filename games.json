@@ -1,52 +1,7 @@
 [
-  {
-    "id": "cosmic-calendar",
-    "title": "Cosmic Calendar",
-    "description": "Explore what happened on different days across cosmic history.",
-    "url": "games/cosmic-calendar/",
-    "category": "Explore",
-    "creator": "Ayush",
-    "status": "published",
-    "featured": true
-  },
-  {
-    "id": "block-market",
-    "title": "Block Market",
-    "description": "Buy ridiculous amounts of block-world items.",
-    "url": "games/block-market/",
-    "category": "Simulation",
-    "creator": "Ayush",
-    "status": "published",
-    "featured": true
-  },
-  {
-    "id": "stop-at-5000",
-    "title": "Stop at 5.000",
-    "description": "Try to stop the hidden timer at exactly 5.000 seconds.",
-    "url": "games/stop-at-5000/",
-    "category": "Skill",
-    "creator": "Ayush",
-    "status": "published",
-    "featured": false
-  },
-  {
-    "id": "a-is-z-typer",
-    "title": "A is Z Typer",
-    "description": "Type words using a mirrored alphabet.",
-    "url": "games/a-is-z-typer/",
-    "category": "Skill",
-    "creator": "Ayush",
-    "status": "published",
-    "featured": false
-  },
-  {
-    "id": "dvd-bounce",
-    "title": "DVD Bounce",
-    "description": "Watch the DVD logo bounce, hit corners, and unlock upgrades.",
-    "url": "games/dvd-bounce/",
-    "category": "Idle",
-    "creator": "Ayush",
-    "status": "published",
-    "featured": true
-  }
+  { "name": "Cosmic Calendar", "url": "index.html" },
+  { "name": "Block Market", "url": "game2.html" },
+  { "name": "Stop at 5.000", "url": "game3.html" },
+  { "name": "A is Z Typer", "url": "game4.html" },
+  { "name": "Unnamed DVD Game", "url": "game5.html" }
 ]
