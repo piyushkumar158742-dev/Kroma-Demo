@@ -1,0 +1,149 @@
+name: Refactor games into folders
+
+on:
+  push:
+    branches:
+      - refactor/games-into-folders-v2
+
+permissions:
+  contents: write
+
+jobs:
+  split-games:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Split games
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+          import re
+
+          games = [
+              ('index.html', 'cosmic-calendar'),
+              ('game2.html', 'block-market'),
+              ('game3.html', 'stop-at-5000'),
+              ('game4.html', 'a-is-z-typer'),
+              ('game5.html', 'dvd-game'),
+          ]
+
+          style_re = re.compile(r'<style(?:\s[^>]*)?>(.*?)</style>', re.I | re.S)
+          script_re = re.compile(r'<script\b([^>]*)>(.*?)</script>', re.I | re.S)
+
+          for source, slug in games:
+              source_text = Path(source).read_text(encoding='utf-8')
+              styles = []
+              scripts = []
+
+              def remove_style(match):
+                  styles.append(match.group(1).strip())
+                  return ''
+
+              html = style_re.sub(remove_style, source_text)
+
+              def process_script(match):
+                  attrs = match.group(1)
+                  body = match.group(2)
+                  src = re.search(r'\bsrc\s*=\s*["\']([^"\']+)["\']', attrs, re.I)
+                  if src:
+                      value = src.group(1)
+                      if value in ('shared.js', './shared.js'):
+                          return '<script src="../../assets/js/shared.js"></script>'
+                      return match.group(0)
+                  if body.strip():
+                      scripts.append(body.strip())
+                  return ''
+
+              html = script_re.sub(process_script, html)
+              html = re.sub(r'href=["\'](?:\./)?shared\.css["\']', 'href="../../assets/css/shared.css"', html)
+
+              js = '\n\n'.join(scripts).strip() + '\n'
+              css = '\n\n'.join(styles).strip() + '\n'
+
+              redirects = {
+                  'index.html': '../cosmic-calendar/index.html',
+                  'game2.html': '../block-market/index.html',
+                  'game3.html': '../stop-at-5000/index.html',
+                  'game4.html': '../a-is-z-typer/index.html',
+                  'game5.html': '../dvd-game/index.html',
+              }
+              for old, new in redirects.items():
+                  js = js.replace('"' + old + '"', '"' + new + '"')
+                  js = js.replace("'" + old + "'", "'" + new + "'")
+
+              game_dir = Path('games') / slug
+              game_dir.mkdir(parents=True, exist_ok=True)
+
+              if 'href="style.css"' not in html:
+                  html = re.sub(r'</head>', '  <link rel="stylesheet" href="style.css">\n</head>', html, count=1, flags=re.I)
+              if 'src="script.js"' not in html:
+                  html = re.sub(r'</body>', '  <script src="script.js"></script>\n</body>', html, count=1, flags=re.I)
+
+              (game_dir / 'index.html').write_text(html.strip() + '\n', encoding='utf-8')
+              (game_dir / 'style.css').write_text(css, encoding='utf-8')
+              (game_dir / 'script.js').write_text(js, encoding='utf-8')
+
+          # Root is now only the random-game entry point.
+          Path('index.html').write_text('''<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#05060f">
+<title>Kroma</title>
+</head>
+<body>
+<p style="font-family:system-ui,sans-serif;text-align:center;margin-top:20vh">Loading a random game…</p>
+<script src="assets/js/shared.js"></script>
+<noscript><p style="text-align:center">JavaScript is required to enter Kroma.</p></noscript>
+</body>
+</html>
+''', encoding='utf-8')
+
+          # Canonical registry paths.
+          registry = json.loads(Path('games.json').read_text(encoding='utf-8'))
+          for game in registry:
+              game['url'] = 'games/' + game['id'] + '/index.html'
+          Path('games.json').write_text(json.dumps(registry, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+
+          # Shared runtime must resolve the registry from nested game folders.
+          shared_path = Path('assets/js/shared.js')
+          shared = shared_path.read_text(encoding='utf-8')
+          if 'SITE_ROOT_URL' not in shared:
+              shared = shared.replace(
+                  '(function(){',
+                  "(function(){\n  var SITE_ROOT_URL=(function(){var currentScript=document.currentScript;return currentScript?new URL('../../',currentScript.src):new URL('./',window.location.href);})();\n  var GAMES_JSON_URL=new URL('games.json',SITE_ROOT_URL).href;",
+                  1,
+              )
+          shared = shared.replace("fetch('games.json', {cache:'no-store'})", "fetch(GAMES_JSON_URL, {cache:'no-store'})")
+          shared = shared.replace('window.location.href = GAMES[idx].url', 'window.location.href = new URL(GAMES[idx].url, SITE_ROOT_URL).href')
+          shared = shared.replace('window.location.replace(selectedEntry.url)', 'window.location.replace(new URL(selectedEntry.url, SITE_ROOT_URL).href)')
+          shared = shared.replace("var siteRootPath = new URL('.', window.location.href).pathname.replace(/\\/+$/, '');", "var siteRootPath = new URL('./', SITE_ROOT_URL).pathname.replace(/\\/+$/, '');")
+          shared_path.write_text(shared, encoding='utf-8')
+
+          # Documentation.
+          Path('README.md').write_text('''# Kroma-Demo\n\nA small collection of browser games and interactive experiments.\n\n## Structure\n\n```text\nKroma-Demo/\n├── index.html\n├── games.json\n├── assets/\n│   ├── css/shared.css\n│   └── js/shared.js\n├── games/\n│   ├── cosmic-calendar/{index.html,style.css,script.js}\n│   ├── block-market/{index.html,style.css,script.js}\n│   ├── stop-at-5000/{index.html,style.css,script.js}\n│   ├── a-is-z-typer/{index.html,style.css,script.js}\n│   └── dvd-game/{index.html,style.css,script.js}\n└── README.md\n```\n\nEach game has its own HTML, CSS, and JavaScript files. Shared platform code remains under `assets/`. `games.json` is the registry. The root `index.html` is the random-game entry point.\n''', encoding='utf-8')
+
+          # Remove old root game files and compatibility loaders.
+          for path in ['game2.html','game3.html','game4.html','game5.html','shared.css','shared.js']:
+              p = Path(path)
+              if p.exists():
+                  p.unlink()
+
+          # Remove this workflow after it performs the one-time transformation.
+          wf = Path('.github/workflows/split-games-v2.yml')
+          if wf.exists():
+              wf.unlink()
+          PY
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "refactor: split each game into html css and js"
+          git push origin HEAD:refactor/games-into-folders-v2
