@@ -1,0 +1,64 @@
+name: Production cleanup
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Remove production debug controls and fix DVD chrome
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          path = Path('game5.html')
+          text = path.read_text(encoding='utf-8')
+
+          text = text.replace('Unnamed DVD Game', 'DVD Game')
+          text = text.replace('<script>\n  // ===========================================================\n  // DVD bounce physics', '<script src="shared.js"></script>\n<script>\n  // ===========================================================\n  // DVD bounce physics', 1)
+
+          chrome = re.compile(
+              r'\n  // ===========================================================\n'
+              r'  // Shared arcade chrome\n'
+              r'  // ===========================================================\n'
+              r'  \(function \(\) \{.*?\n  \}\)\(\);\n',
+              re.S,
+          )
+          text, chrome_count = chrome.subn('\n', text, count=1)
+          if chrome_count != 1:
+              raise SystemExit(f'Expected one shared arcade chrome block, found {chrome_count}')
+
+          debug = re.compile(
+              r'\n  // ===========================================================\n'
+              r'  // --- DEBUG CONTROLS ---.*?\n  // ===========================================================\n'
+              r'  window\.addEventListener\(\'keydown\'.*?\n  \}\);\n',
+              re.S,
+          )
+          text, debug_count = debug.subn('\n', text, count=1)
+          if debug_count != 1:
+              raise SystemExit(f'Expected one debug-controls block, found {debug_count}')
+
+          path.write_text(text, encoding='utf-8')
+
+          workflow = Path('.github/workflows/cleanup-production.yml')
+          workflow.unlink()
+
+      - name: Commit production cleanup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add game5.html
+          git add -u .github/workflows/cleanup-production.yml
+          git diff --cached --quiet || git commit -m "Remove DVD debug controls and fix production chrome"
+          git push
