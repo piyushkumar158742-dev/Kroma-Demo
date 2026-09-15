@@ -24,11 +24,9 @@ body::before{content:"";position:fixed;inset:-20%;pointer-events:none;background
 .label{margin:0;color:#bdbdc8;font-size:.76rem;font-weight:500}
 .percent{margin:0;color:#666777;font:400 .65rem/1 "Space Mono",monospace;font-variant-numeric:tabular-nums;min-width:3.2ch;text-align:right}
 .track{height:5px;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.065);box-shadow:inset 0 1px 1px rgba(0,0,0,.22)}
-.bar{display:block;width:100%;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--accent),var(--accent2));box-shadow:0 0 18px rgba(137,121,255,.32);transform:scaleX(0);transform-origin:left center}
-.bar.ready{animation:load 1.2s cubic-bezier(.45,0,.25,1) forwards}
-@keyframes load{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.bar{display:block;width:100%;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--accent),var(--accent2));box-shadow:0 0 18px rgba(137,121,255,.32);transform:scaleX(0);transform-origin:left center;transition:transform .06s linear}
 @media(max-width:480px){.loader{width:min(90vw,400px);padding:28px 24px;border-radius:19px}.brand{margin-bottom:27px}.tagline{margin-bottom:27px}.logo{font-size:2.3rem}}
-@media(prefers-reduced-motion:reduce){.bar{transition:none}.bar.ready{animation:none;transform:scaleX(1)}}
+@media(prefers-reduced-motion:reduce){.bar{transition:none;transform:scaleX(1)}}
 </style>
 </head>
 <body>
@@ -54,32 +52,44 @@ body::before{content:"";position:fixed;inset:-20%;pointer-events:none;background
     {name:'DVD Game',url:'game5.html'}
   ];
   var started=Date.now();
-  var minimum=4200;
-  var displayed=0;
+  var minimum=1850;
+  var launched=false;
+  var selected=games[Math.floor(Math.random()*games.length)];
+  var fallbackTimer;
+
   function update(){
+    if(launched)return;
     var elapsed=Date.now()-started;
-    var progress=Math.min(0.97,elapsed/minimum);
-    var target=Math.floor(progress*97);
-    if(target>displayed){displayed=target;percent.textContent=(displayed<10?'0':'')+displayed+'%';bar.style.transform='scaleX('+progress+')';}
-    if(displayed<97) requestAnimationFrame(update);
+    var progress=Math.min(.96,elapsed/minimum);
+    var value=Math.min(96,Math.floor(progress*96));
+    percent.textContent=(value<10?'0':'')+value+'%';
+    bar.style.transform='scaleX('+progress+')';
+    if(elapsed<minimum) requestAnimationFrame(update);
   }
-  requestAnimationFrame(update);
-  function launch(list){
-    var game=list[Math.floor(Math.random()*list.length)]||games[0];
+
+  function launch(game){
+    if(launched)return;
+    launched=true;
+    clearTimeout(fallbackTimer);
     status.textContent='Opening '+game.name;
-    displayed=100;
     percent.textContent='100%';
-    bar.classList.add('ready');
-    var delay=Math.max(0,minimum-(Date.now()-started));
-    setTimeout(function(){window.location.replace(game.url);},delay);
+    bar.style.transform='scaleX(1)';
+    setTimeout(function(){window.location.replace(game.url);},80);
   }
+
+  requestAnimationFrame(update);
+
   fetch('games.json',{cache:'no-store'})
     .then(function(r){if(!r.ok)throw new Error('registry');return r.json();})
     .then(function(data){
-      var live=Array.isArray(data)?data.filter(function(g){return g&&typeof g.url==='string'&&g.url.trim();}):[];
-      launch(live.length?live:games);
+      if(Array.isArray(data)){
+        var live=data.filter(function(g){return g&&typeof g.url==='string'&&g.url.trim();});
+        if(live.length) selected=live[Math.floor(Math.random()*live.length)];
+      }
     })
-    .catch(function(){launch(games);});
+    .catch(function(){});
+
+  fallbackTimer=setTimeout(function(){launch(selected);},minimum);
 })();
 </script>
 </body>
