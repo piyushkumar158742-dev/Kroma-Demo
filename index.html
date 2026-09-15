@@ -7,96 +7,62 @@
 <title>OddPlay</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
+:root{color-scheme:dark;--bg:#05060d;--panel:rgba(14,15,28,.78);--text:#f7f7fb;--muted:#8d8e9d;--dim:#5d5e6c;--accent:#8979ff;--accent2:#b0a6ff}
 *{box-sizing:border-box}
 html,body{width:100%;height:100%;margin:0}
-body{
-  display:grid;
-  place-items:center;
-  overflow:hidden;
-  background:
-    radial-gradient(circle at 50% 42%,rgba(124,108,240,.12),transparent 30%),
-    #05060f;
-  color:#f5f3ff;
-  font-family:Inter,system-ui,sans-serif;
-}
-body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  background-image:
-    radial-gradient(circle,rgba(255,255,255,.34) 1px,transparent 1px),
-    radial-gradient(circle,rgba(255,255,255,.2) 1px,transparent 1px);
-  background-size:120px 120px,210px 210px;
-  background-position:12px 30px,70px 90px;
-  opacity:.16;
-}
-.loader{
-  position:relative;
-  width:min(88vw,390px);
-  padding:34px 30px 30px;
-  text-align:center;
-  border:1px solid rgba(255,255,255,.09);
-  border-radius:22px;
-  background:rgba(12,13,28,.72);
-  box-shadow:0 24px 70px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.04);
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
-}
-.logo-wrap{display:inline-flex;align-items:center;gap:12px;margin-bottom:12px}
-.mark{
-  width:12px;
-  height:12px;
-  border-radius:50%;
-  background:#7c6cf0;
-  box-shadow:0 0 24px rgba(124,108,240,.75);
-  animation:pulse 1.6s ease-in-out infinite;
-}
-.logo{
-  margin:0;
-  font:700 clamp(2.2rem,8vw,3.2rem)/1 "Space Mono",monospace;
-  letter-spacing:.11em;
-  text-indent:.11em;
-}
-.kicker{
-  margin:0 0 22px;
-  color:#868395;
-  font-size:.7rem;
-  font-weight:600;
-  letter-spacing:.18em;
-  text-transform:uppercase;
-}
-.status-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
-.text{margin:0;color:#bbb7c9;font-size:.78rem}
-.dots{display:flex;gap:4px}
-.dots span{width:4px;height:4px;border-radius:50%;background:#7c6cf0;opacity:.25;animation:dot 1.1s ease-in-out infinite}
-.dots span:nth-child(2){animation-delay:.16s}.dots span:nth-child(3){animation-delay:.32s}
-.line{height:5px;width:100%;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden}
-.line span{display:block;width:34%;height:100%;border-radius:inherit;background:linear-gradient(90deg,rgba(124,108,240,.25),#9a8cff,rgba(124,108,240,.25));box-shadow:0 0 18px rgba(124,108,240,.45);animation:load 1.35s cubic-bezier(.45,0,.25,1) infinite}
-.footer{margin-top:18px;color:#5f5d6c;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase}
-@keyframes load{0%{transform:translateX(-135%)}100%{transform:translateX(410%)}}
-@keyframes pulse{0%,100%{transform:scale(.8);opacity:.55}50%{transform:scale(1);opacity:1}}
-@keyframes dot{0%,80%,100%{opacity:.2;transform:translateY(0)}40%{opacity:1;transform:translateY(-2px)}}
-@media(max-width:420px){.loader{padding:30px 22px 26px;border-radius:18px}.logo{font-size:2.25rem}}
-@media(prefers-reduced-motion:reduce){.mark,.dots span,.line span{animation:none}.mark{opacity:1}.line span{transform:translateX(190%)}}
+body{display:grid;place-items:center;overflow:hidden;background:var(--bg);color:var(--text);font-family:"DM Sans",Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:-25%;background:radial-gradient(circle at 50% 45%,rgba(137,121,255,.16),transparent 25%),radial-gradient(circle at 12% 12%,rgba(255,255,255,.025),transparent 20%),radial-gradient(circle at 88% 88%,rgba(255,255,255,.02),transparent 22%);filter:blur(8px);pointer-events:none}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.14;background-image:radial-gradient(circle at 20% 30%,#fff .7px,transparent .8px),radial-gradient(circle at 80% 20%,#fff .6px,transparent .7px),radial-gradient(circle at 35% 78%,#fff .55px,transparent .7px),radial-gradient(circle at 72% 72%,#fff .45px,transparent .65px);background-size:240px 240px,310px 310px,280px 280px,190px 190px}
+.loader{position:relative;width:min(90vw,430px);padding:38px 38px 32px;border:1px solid rgba(255,255,255,.085);border-radius:24px;background:linear-gradient(180deg,rgba(22,23,39,.82),var(--panel));box-shadow:0 35px 100px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.015),inset 0 1px 0 rgba(255,255,255,.06);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
+.topline{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px}
+.eyebrow{display:flex;align-items:center;gap:9px;color:#9898a8;font-size:.62rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase}
+.live{position:relative;width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 14px rgba(137,121,255,.75)}
+.live::after{content:"";position:absolute;inset:-4px;border:1px solid rgba(137,121,255,.3);border-radius:50%;animation:ring 1.8s ease-out infinite}
+.version{color:#585967;font:400 .58rem/1 "Space Mono",monospace;letter-spacing:.08em}
+.brand{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.brand-mark{position:relative;width:18px;height:18px;border-radius:6px;background:linear-gradient(135deg,var(--accent2),var(--accent));box-shadow:0 0 34px rgba(137,121,255,.28);transform:rotate(12deg)}
+.brand-mark::after{content:"";position:absolute;width:6px;height:6px;left:6px;top:6px;border-radius:2px;background:#fff;opacity:.82}
+.logo{margin:0;font:700 clamp(2.45rem,9vw,3.5rem)/.96 "Space Mono",monospace;letter-spacing:-.04em}
+.tagline{margin:0 0 34px;color:#777887;font-size:.78rem;letter-spacing:.01em}
+.status{display:flex;align-items:end;justify-content:space-between;margin-bottom:11px}
+.status-label{margin:0;color:#c8c8d2;font-size:.73rem;font-weight:500}
+.percent{margin:0;color:#77788a;font:400 .66rem/1 "Space Mono",monospace}
+.track{position:relative;height:6px;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.065);box-shadow:inset 0 1px 1px rgba(0,0,0,.25)}
+.bar{position:absolute;inset:0 auto 0 0;width:36%;border-radius:inherit;background:linear-gradient(90deg,var(--accent),var(--accent2));box-shadow:0 0 22px rgba(137,121,255,.35);animation:progress 1.35s cubic-bezier(.65,0,.2,1) infinite}
+.shine{position:absolute;inset:0;transform:translateX(-110%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);animation:shine 1.35s ease-in-out infinite}
+.note{display:flex;align-items:center;gap:8px;margin-top:22px;color:#595a69;font-size:.61rem;letter-spacing:.08em;text-transform:uppercase}
+.note-dot{width:3px;height:3px;border-radius:50%;background:#77788a}
+@keyframes progress{0%{transform:translateX(-125%)}100%{transform:translateX(375%)}}
+@keyframes shine{0%{transform:translateX(-115%)}55%,100%{transform:translateX(115%)}}
+@keyframes ring{0%{transform:scale(.7);opacity:.8}100%{transform:scale(1.7);opacity:0}}
+@media(max-width:480px){.loader{width:min(91vw,430px);padding:30px 24px 26px;border-radius:20px}.topline{margin-bottom:30px}.tagline{margin-bottom:28px}.logo{font-size:2.35rem}}
+@media(prefers-reduced-motion:reduce){.live::after,.bar,.shine{animation:none}.bar{transform:translateX(175%);width:36%}.shine{display:none}}
 </style>
 </head>
 <body>
 <main class="loader" aria-live="polite" aria-busy="true">
-  <div class="logo-wrap"><span class="mark" aria-hidden="true"></span><h1 class="logo">OddPlay</h1></div>
-  <p class="kicker">Tiny games. Big distractions.</p>
-  <div class="status-row">
-    <p class="text" id="status">Loading arcade</p>
-    <div class="dots" aria-hidden="true"><span></span><span></span><span></span></div>
+  <div class="topline">
+    <div class="eyebrow"><span class="live" aria-hidden="true"></span>OddPlay Arcade</div>
+    <div class="version">PLAY / 01</div>
   </div>
-  <div class="line" aria-hidden="true"><span></span></div>
-  <div class="footer">Finding something fun…</div>
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <h1 class="logo">OddPlay</h1>
+  </div>
+  <p class="tagline">A small arcade of very odd ideas.</p>
+  <div class="status">
+    <p class="status-label" id="status">Preparing your game</p>
+    <p class="percent" id="percent">00%</p>
+  </div>
+  <div class="track" aria-hidden="true"><span class="bar"></span><span class="shine"></span></div>
+  <div class="note"><span class="note-dot"></span><span>Curating something worth playing</span></div>
 </main>
 <script>
 (function(){
   var status=document.getElementById('status');
+  var percent=document.getElementById('percent');
   var games=[
     {name:'Cosmic Calendar',url:'game1.html'},
     {name:'Block Market',url:'game2.html'},
@@ -105,10 +71,17 @@ body::before{
     {name:'DVD Game',url:'game5.html'}
   ];
   var started=Date.now();
-  var minimum=1250;
+  var minimum=1350;
+  var displayTimer=setInterval(function(){
+    var elapsed=Date.now()-started;
+    var value=Math.min(92,Math.floor((elapsed/minimum)*86));
+    percent.textContent=(value<10?'0':'')+value+'%';
+  },50);
   function launch(list){
     var game=list[Math.floor(Math.random()*list.length)]||games[0];
     status.textContent='Opening '+game.name;
+    percent.textContent='100%';
+    clearInterval(displayTimer);
     var delay=Math.max(0,minimum-(Date.now()-started));
     setTimeout(function(){window.location.replace(game.url);},delay);
   }
