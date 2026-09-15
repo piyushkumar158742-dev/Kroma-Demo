@@ -51,15 +51,16 @@ body::before{content:"";position:fixed;inset:-20%;pointer-events:none;background
     {name:'A is Z Typer',url:'game4.html'},
     {name:'DVD Game',url:'game5.html'}
   ];
-  var started=Date.now();
-  var minimum=1850;
+
+  var started=performance.now();
+  var minimum=1500+Math.floor(Math.random()*2501);
   var launched=false;
   var selected=games[Math.floor(Math.random()*games.length)];
   var fallbackTimer;
 
   function update(){
     if(launched)return;
-    var elapsed=Date.now()-started;
+    var elapsed=performance.now()-started;
     var progress=Math.min(.96,elapsed/minimum);
     var value=Math.min(96,Math.floor(progress*96));
     percent.textContent=(value<10?'0':'')+value+'%';
@@ -84,7 +85,7 @@ body::before{content:"";position:fixed;inset:-20%;pointer-events:none;background
     .then(function(data){
       if(Array.isArray(data)){
         var live=data.filter(function(g){return g&&typeof g.url==='string'&&g.url.trim();});
-        if(live.length) selected=live[Math.floor(Math.random()*live.length)];
+        if(live.length)selected=live[Math.floor(Math.random()*live.length)];
       }
     })
     .catch(function(){});
