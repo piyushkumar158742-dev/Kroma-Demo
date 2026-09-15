@@ -3,61 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#05060f">
+<meta name="theme-color" content="#05060d">
 <title>OddPlay</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{color-scheme:dark;--bg:#05060d;--panel:rgba(14,15,28,.78);--text:#f7f7fb;--muted:#8d8e9d;--dim:#5d5e6c;--accent:#8979ff;--accent2:#b0a6ff}
+:root{color-scheme:dark;--bg:#05060d;--panel:rgba(14,15,28,.82);--text:#f7f7fb;--muted:#9091a0;--accent:#8979ff;--accent2:#aaa0ff}
 *{box-sizing:border-box}
 html,body{width:100%;height:100%;margin:0}
 body{display:grid;place-items:center;overflow:hidden;background:var(--bg);color:var(--text);font-family:"DM Sans",Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
-body::before{content:"";position:fixed;inset:-25%;background:radial-gradient(circle at 50% 45%,rgba(137,121,255,.16),transparent 25%),radial-gradient(circle at 12% 12%,rgba(255,255,255,.025),transparent 20%),radial-gradient(circle at 88% 88%,rgba(255,255,255,.02),transparent 22%);filter:blur(8px);pointer-events:none}
-body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.14;background-image:radial-gradient(circle at 20% 30%,#fff .7px,transparent .8px),radial-gradient(circle at 80% 20%,#fff .6px,transparent .7px),radial-gradient(circle at 35% 78%,#fff .55px,transparent .7px),radial-gradient(circle at 72% 72%,#fff .45px,transparent .65px);background-size:240px 240px,310px 310px,280px 280px,190px 190px}
-.loader{position:relative;width:min(90vw,430px);padding:38px 38px 32px;border:1px solid rgba(255,255,255,.085);border-radius:24px;background:linear-gradient(180deg,rgba(22,23,39,.82),var(--panel));box-shadow:0 35px 100px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.015),inset 0 1px 0 rgba(255,255,255,.06);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
-.topline{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px}
-.eyebrow{display:flex;align-items:center;gap:9px;color:#9898a8;font-size:.62rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase}
-.live{position:relative;width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 14px rgba(137,121,255,.75)}
-.live::after{content:"";position:absolute;inset:-4px;border:1px solid rgba(137,121,255,.3);border-radius:50%;animation:ring 1.8s ease-out infinite}
-.version{color:#585967;font:400 .58rem/1 "Space Mono",monospace;letter-spacing:.08em}
-.brand{display:flex;align-items:center;gap:14px;margin-bottom:10px}
-.brand-mark{position:relative;width:18px;height:18px;border-radius:6px;background:linear-gradient(135deg,var(--accent2),var(--accent));box-shadow:0 0 34px rgba(137,121,255,.28);transform:rotate(12deg)}
-.brand-mark::after{content:"";position:absolute;width:6px;height:6px;left:6px;top:6px;border-radius:2px;background:#fff;opacity:.82}
-.logo{margin:0;font:700 clamp(2.45rem,9vw,3.5rem)/.96 "Space Mono",monospace;letter-spacing:-.04em}
-.tagline{margin:0 0 34px;color:#777887;font-size:.78rem;letter-spacing:.01em}
-.status{display:flex;align-items:end;justify-content:space-between;margin-bottom:11px}
-.status-label{margin:0;color:#c8c8d2;font-size:.73rem;font-weight:500}
-.percent{margin:0;color:#77788a;font:400 .66rem/1 "Space Mono",monospace}
-.track{position:relative;height:6px;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.065);box-shadow:inset 0 1px 1px rgba(0,0,0,.25)}
-.bar{position:absolute;inset:0 auto 0 0;width:36%;border-radius:inherit;background:linear-gradient(90deg,var(--accent),var(--accent2));box-shadow:0 0 22px rgba(137,121,255,.35);animation:progress 1.35s cubic-bezier(.65,0,.2,1) infinite}
-.shine{position:absolute;inset:0;transform:translateX(-110%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);animation:shine 1.35s ease-in-out infinite}
-.note{display:flex;align-items:center;gap:8px;margin-top:22px;color:#595a69;font-size:.61rem;letter-spacing:.08em;text-transform:uppercase}
-.note-dot{width:3px;height:3px;border-radius:50%;background:#77788a}
-@keyframes progress{0%{transform:translateX(-125%)}100%{transform:translateX(375%)}}
-@keyframes shine{0%{transform:translateX(-115%)}55%,100%{transform:translateX(115%)}}
-@keyframes ring{0%{transform:scale(.7);opacity:.8}100%{transform:scale(1.7);opacity:0}}
-@media(max-width:480px){.loader{width:min(91vw,430px);padding:30px 24px 26px;border-radius:20px}.topline{margin-bottom:30px}.tagline{margin-bottom:28px}.logo{font-size:2.35rem}}
-@media(prefers-reduced-motion:reduce){.live::after,.bar,.shine{animation:none}.bar{transform:translateX(175%);width:36%}.shine{display:none}}
+body::before{content:"";position:fixed;inset:-20%;pointer-events:none;background:radial-gradient(circle at 50% 43%,rgba(137,121,255,.14),transparent 28%),radial-gradient(circle at 20% 20%,rgba(255,255,255,.02),transparent 22%),radial-gradient(circle at 80% 80%,rgba(255,255,255,.02),transparent 22%);filter:blur(8px)}
+.loader{position:relative;width:min(88vw,400px);padding:34px;border:1px solid rgba(255,255,255,.075);border-radius:22px;background:var(--panel);box-shadow:0 28px 80px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.05);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.brand{display:flex;align-items:center;gap:13px;margin-bottom:32px}
+.mark{position:relative;width:17px;height:17px;border-radius:5px;background:linear-gradient(135deg,var(--accent2),var(--accent));transform:rotate(12deg);box-shadow:0 0 28px rgba(137,121,255,.3)}
+.mark::after{content:"";position:absolute;width:5px;height:5px;left:6px;top:6px;border-radius:1.5px;background:#fff;opacity:.85}
+.logo{margin:0;font:700 clamp(2.35rem,9vw,3.25rem)/1 "Space Mono",monospace;letter-spacing:-.055em}
+.status{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.label{margin:0;color:#bdbdc8;font-size:.76rem;font-weight:500}
+.percent{margin:0;color:#666777;font:400 .65rem/1 "Space Mono",monospace}
+.track{height:5px;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.065);box-shadow:inset 0 1px 1px rgba(0,0,0,.22)}
+.bar{display:block;width:34%;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--accent),var(--accent2));box-shadow:0 0 18px rgba(137,121,255,.32);animation:load 1.35s cubic-bezier(.65,0,.2,1) infinite}
+@keyframes load{0%{transform:translateX(-135%)}100%{transform:translateX(405%)}}
+@media(max-width:480px){.loader{width:min(90vw,400px);padding:28px 24px;border-radius:19px}.brand{margin-bottom:28px}.logo{font-size:2.3rem}}
+@media(prefers-reduced-motion:reduce){.bar{animation:none;transform:translateX(195%)}}
 </style>
 </head>
 <body>
 <main class="loader" aria-live="polite" aria-busy="true">
-  <div class="topline">
-    <div class="eyebrow"><span class="live" aria-hidden="true"></span>OddPlay Arcade</div>
-    <div class="version">PLAY / 01</div>
-  </div>
-  <div class="brand">
-    <span class="brand-mark" aria-hidden="true"></span>
-    <h1 class="logo">OddPlay</h1>
-  </div>
-  <p class="tagline">A small arcade of very odd ideas.</p>
+  <div class="brand"><span class="mark" aria-hidden="true"></span><h1 class="logo">OddPlay</h1></div>
   <div class="status">
-    <p class="status-label" id="status">Preparing your game</p>
+    <p class="label" id="status">Preparing your game</p>
     <p class="percent" id="percent">00%</p>
   </div>
-  <div class="track" aria-hidden="true"><span class="bar"></span><span class="shine"></span></div>
-  <div class="note"><span class="note-dot"></span><span>Curating something worth playing</span></div>
+  <div class="track" aria-hidden="true"><span class="bar"></span></div>
 </main>
 <script>
 (function(){
@@ -72,7 +51,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.14;ba
   ];
   var started=Date.now();
   var minimum=1350;
-  var displayTimer=setInterval(function(){
+  var timer=setInterval(function(){
     var elapsed=Date.now()-started;
     var value=Math.min(92,Math.floor((elapsed/minimum)*86));
     percent.textContent=(value<10?'0':'')+value+'%';
@@ -81,7 +60,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.14;ba
     var game=list[Math.floor(Math.random()*list.length)]||games[0];
     status.textContent='Opening '+game.name;
     percent.textContent='100%';
-    clearInterval(displayTimer);
+    clearInterval(timer);
     var delay=Math.max(0,minimum-(Date.now()-started));
     setTimeout(function(){window.location.replace(game.url);},delay);
   }
