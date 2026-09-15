@@ -4,31 +4,48 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#05060f">
-<meta name="description" content="OddPlay — loading the arcade.">
 <title>OddPlay</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{color-scheme:dark;--bg:#05060f;--text:#f5f3ff;--muted:#9a97ab;--violet:#7c6cf0;--gold:#f0c26e;--rose:#f080a9}
-*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0}body{overflow:hidden;display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,rgba(124,108,240,.15),transparent 38%),radial-gradient(circle at 15% 85%,rgba(240,128,169,.08),transparent 30%),var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif}
+*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0}body{overflow:hidden;display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,rgba(124,108,240,.16),transparent 38%),radial-gradient(circle at 15% 85%,rgba(240,128,169,.08),transparent 30%),var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif}
 body:before{content:"";position:fixed;inset:-25%;background-image:radial-gradient(circle,rgba(255,255,255,.72) 0 1px,transparent 1.5px),radial-gradient(circle,rgba(240,194,110,.4) 0 1px,transparent 1.5px);background-size:95px 95px,150px 150px;background-position:0 0,45px 30px;opacity:.28;animation:drift 24s linear infinite;pointer-events:none}
-.loader{width:min(88vw,420px);text-align:center;position:relative;z-index:1}.brand{margin:0;font-family:"Space Mono",monospace;font-size:clamp(2.2rem,8vw,3.5rem);letter-spacing:.18em;text-transform:uppercase;text-indent:.18em;text-shadow:0 0 28px rgba(124,108,240,.45)}
-.eyebrow{margin:.8rem 0 2rem;color:var(--muted);font-size:.78rem;letter-spacing:.18em;text-transform:uppercase}.spinner{width:44px;height:44px;margin:0 auto 1.2rem;border:2px solid rgba(255,255,255,.11);border-top-color:var(--violet);border-right-color:var(--gold);border-radius:50%;animation:spin .85s linear infinite;box-shadow:0 0 30px rgba(124,108,240,.16)}
-.status{min-height:1.5em;margin:0;color:#d8d5e4;font-family:"Space Mono",monospace;font-size:.78rem;letter-spacing:.08em}.progress{width:100%;height:3px;margin-top:1.25rem;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.07)}.progress:after{content:"";display:block;width:38%;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--violet),var(--gold),var(--rose));animation:load 1.15s ease-in-out infinite}.hint{margin:.9rem 0 0;color:rgba(154,151,171,.75);font-size:.68rem;letter-spacing:.04em}
+.loader{width:min(88vw,420px);text-align:center;position:relative;z-index:1}.brand{margin:0;font:700 clamp(2.2rem,8vw,3.5rem)/1 "Space Mono",monospace;letter-spacing:.18em;text-transform:uppercase;text-indent:.18em;text-shadow:0 0 28px rgba(124,108,240,.45)}
+.eyebrow{margin:.8rem 0 2rem;color:var(--muted);font-size:.78rem;letter-spacing:.18em;text-transform:uppercase}.spinner{width:44px;height:44px;margin:0 auto 1.2rem;border:2px solid rgba(255,255,255,.11);border-top-color:var(--violet);border-right-color:var(--gold);border-radius:50%;animation:spin .85s linear infinite}.status{min-height:1.5em;margin:0;color:#d8d5e4;font:400 .78rem/1.5 "Space Mono",monospace;letter-spacing:.08em}.progress{width:100%;height:3px;margin-top:1.25rem;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.07)}.progress:after{content:"";display:block;width:38%;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--violet),var(--gold),var(--rose));animation:load 1.15s ease-in-out infinite}.hint{margin:.9rem 0 0;color:rgba(154,151,171,.75);font-size:.68rem}
 @keyframes spin{to{transform:rotate(360deg)}}@keyframes load{0%{transform:translateX(-110%)}100%{transform:translateX(290%)}}@keyframes drift{to{transform:translate3d(40px,25px,0)}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important}}
 </style>
 </head>
 <body>
-<main class="loader" aria-live="polite" aria-busy="true"><h1 class="brand">OddPlay</h1><p class="eyebrow">Loading arcade</p><div class="spinner" aria-hidden="true"></div><p class="status" id="status">Choosing a game…</p><div class="progress" aria-hidden="true"></div><p class="hint">Preparing your next random play</p></main>
+<main class="loader" aria-live="polite" aria-busy="true">
+<h1 class="brand">OddPlay</h1>
+<p class="eyebrow">Loading arcade</p>
+<div class="spinner" aria-hidden="true"></div>
+<p class="status" id="status">Choosing a game…</p>
+<div class="progress" aria-hidden="true"></div>
+<p class="hint">Preparing your next random play</p>
+</main>
 <script>
 (function(){
-var status=document.getElementById('status');
-var FALLBACK_GAMES=[{name:'Cosmic Calendar',url:'game1.html'},{name:'Block Market',url:'game2.html'},{name:'Stop at 5.000',url:'game3.html'},{name:'A is Z Typer',url:'game4.html'},{name:'DVD Game',url:'game5.html'}];
-function valid(g){return Array.isArray(g)&&g.length>0&&g.every(function(x){return x&&typeof x.url==='string'&&x.url.trim()})}
-function choose(games){var game=games[Math.floor(Math.random()*games.length)]||FALLBACK_GAMES[0];status.textContent='Launching '+(game.name||'your game')+'…';setTimeout(function(){window.location.replace(game.url)},350)}
-fetch('games.json',{cache:'no-store'}).then(function(r){if(!r.ok)throw Error('Registry unavailable');return r.json()}).then(function(g){choose(valid(g)?g:FALLBACK_GAMES)}).catch(function(){status.textContent='Loading arcade…';choose(FALLBACK_GAMES)});
+  var status=document.getElementById('status');
+  var games=[
+    {name:'Cosmic Calendar',url:'game1.html'},
+    {name:'Block Market',url:'game2.html'},
+    {name:'Stop at 5.000',url:'game3.html'},
+    {name:'A is Z Typer',url:'game4.html'},
+    {name:'DVD Game',url:'game5.html'}
+  ];
+  var started=Date.now();
+  var minLoad=1500;
+  function launch(){
+    var game=games[Math.floor(Math.random()*games.length)];
+    status.textContent='Launching '+game.name+'…';
+    var wait=Math.max(0,minLoad-(Date.now()-started));
+    setTimeout(function(){window.location.replace(game.url);},wait);
+  }
+  fetch('games.json',{cache:'no-store'})
+    .then(function(r){if(!r.ok)throw new Error('registry');return r.json();})
+    .then(function(data){if(Array.isArray(data)&&data.length)games=data.filter(function(g){return g&&g.url;});launch();})
+    .catch(function(){status.textContent='Preparing arcade…';launch();});
 })();
 </script>
 </body>
